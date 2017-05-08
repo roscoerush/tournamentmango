@@ -30,6 +30,17 @@ script(type="text/ng-template", id="/dialog/adduser")
               span(md-highlight-text="searchText") {{place}}
             md-not-found No matches.
 
+        h3.md-subhead.subhead Contact Info
+        .input-row(layout-gt-sm="row", layout-sm="column", ng-if="!viewOnly")
+          md-input-container(row)
+            label Email
+            input(name="email", ng-model="item.email", md-maxlength="30", required)
+
+        .input-row(layout-gt-sm="row", layout-sm="column", ng-if="!viewOnly")
+          md-input-container(row)
+            label Mobile Phone
+            input(name="phone", ng-model="item.phone", md-maxlength="30", required)
+
         h3.md-subhead.subhead Aliases
         .input-row(layout="row")
           md-chips(
