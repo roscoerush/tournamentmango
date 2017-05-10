@@ -35,11 +35,21 @@ script(type="text/ng-template", id="/dialog/adduser")
           md-input-container(row)
             label Email
             input(name="email", ng-model="item.email", md-maxlength="30", required)
+        .row(layout-sm="row", ng-if="viewOnly")
+          .row
+            h4.md-subhead.subhead Email
+          .row
+            {{item.email}}
 
         .input-row(layout-gt-sm="row", layout-sm="column", ng-if="!viewOnly")
           md-input-container(row)
             label Mobile Phone
             input(name="phone", ng-model="item.phone", md-maxlength="30", required)
+        .row(layout-sm="row", ng-if="viewOnly")
+          .row
+            h4.md-subhead.subhead Mobile Phone
+          .row
+            {{item.phone}}
 
         h3.md-subhead.subhead Aliases
         .input-row(layout="row")
