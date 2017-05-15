@@ -8,8 +8,8 @@
         "--no-color"
     ],
     "tasks": [
-        {
-            "taskName": "build:all",
+                {
+            "taskName": "default",
             "args": [],
             "isBuildCommand": true,
             "problemMatcher": [
@@ -19,7 +19,7 @@
             ]
         },
         {
-            "taskName": "default",
+            "taskName": "build:all",
             "args": [],
             "isBuildCommand": true,
             "problemMatcher": [

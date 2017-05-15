@@ -1,0 +1,126 @@
+
+script(type="text/ng-template", id="/team-manage")
+
+  md-card(ng-if="canOnlySelectUsers()", layout="column")
+    h2.md-title.margin-left-25 Selecting Tournament Teams
+
+    div(layout="row")
+      .padding-left-20(flex)
+        | When you are done selecting teams (you currently have {{currentTeamBucketSize() || 0}}), proceed here:
+        md-button.md-primary.md-raised(ng-click="backToTournamentsetup()") Back to Tournament Setup
+
+  md-card(ng-if="anyCompletedTournaments() && !canOnlySelectUsers()", layout-gt-sm="row", layout-sm="column")
+
+    h2.md-title.margin-left-25 Scoring
+
+    div(flex="5", hide-sm)
+
+    md-input-container
+      label Game
+      md-select(ng-model="userData.firebase.scoreGame", ng-change="saveFirebase()")
+        md-option(ng-repeat="tournament in allCompletedTournamentGames()", value="{{tournament}}") {{tournament}}
+
+    div(flex="5", hide-sm)
+
+    md-input-container
+      label Score Function
+      md-select(ng-model="userData.firebase.scoreFunc", ng-change="saveFirebase()")
+        md-option(value="simple") Simple (Win-Loss)
+        md-option(value="ell") ELL
+
+    md-button.md-warn(ng-click="recalculateScore()", ng-disabled="calculating") Force Recalculate
+
+    div(flex, hide-sm)
+
+    ng-md-icon.auto-vert-margin.margin-right-25.spin(icon="refresh", ng-if="calculating")
+      md-tooltip Recalculating scores...
+
+  md-card
+    md-data-table-toolbar(ng-hide="selected.length || filter.show")
+      h2.md-title
+        ng-md-icon(size="24", icon="warning", ng-if="!isMine")
+          md-tooltip This set was not made by you
+        | &nbsp;Team Management ({{setObject.realName || 'none'}})
+      div(flex)
+
+      md-button.md-icon-button(ng-click="filter.show = true", aria-label="search")
+        ng-md-icon(icon="search", size="24")
+          md-tooltip Search for teams
+
+      md-button.md-icon-button(ng-click="addItem($event)", aria-label="add user")
+        ng-md-icon(icon="person_add", size="24")
+          md-tooltip Add new team
+
+    md-data-table-toolbar(ng-show="filter.show && !selected.length")
+      ng-md-icon(icon="search", size="24")
+      form(flex, name="filter.form")
+        input(type="text", ng-model="datatable.filter", ng-model-options="filter.options", placeholder="Search...")
+      md-button.md-icon-button(ng-click="hideSearch()", aria-label="hide search")
+        ng-md-icon(icon="close")
+          md-tooltip Close search
+
+    md-data-table-toolbar(ng-show="selected.length")
+      div {{selected.length}} {{selected.length > 1 ? 'people' : 'person'}} selected
+      div(flex)
+      md-button.md-icon-button(ng-click="addToTeamBucket()", aria-label="add to team bucket")
+        ng-md-icon(icon="group_add")
+          md-tooltip Add to team bucket
+      md-button.md-icon-button(ng-if="selected.length == 1", ng-click="editItem($event)", aria-label="edit user")
+        ng-md-icon(icon="edit")
+          md-tooltip Edit team
+      md-button.md-icon-button(ng-click="removeItem($event)", aria-label="remove users")
+        ng-md-icon(icon="delete")
+          md-tooltip Remove team
+
+    md-data-table-container
+      table(md-data-table, md-row-select="selected")
+        thead(md-order="datatable.order", md-trigger="getUsers")
+          tr
+            th(name="Name", order-by="name")
+            th(name="Location", order-by="location")
+            th(name="Wins", numeric, order-by="wins")
+            th(name="Losses", numeric, order-by="losses")
+            th(name="Points", numeric, order-by="points")
+            th(name="Aliases, Games, Characters")
+
+        tbody
+
+          tr(md-auto-select, ng-repeat="user in visibleUsers")
+            td {{user.name}}
+            td(ng-class="{empty: !user.location}") {{user.location}}
+            td {{user.wins || 0}}
+            td {{user.losses || 0}}
+            td {{(user.points || 0) | number:0}}
+            td
+              md-button.md-raised.md-accent(ng-click="viewItem($event, user)") View Info
+
+    md-data-table-pagination(md-row-select="[10, 25, 50]", md-limit="datatable.limit", md-page="datatable.page", md-total="{{users.length}}", md-trigger="getUsers")
+
+  .abs-position-bottom-right(ng-if="!canOnlySelectUsers()")
+    md-fab-speed-dial.md-scale(md-direction="up", md-open="isOpen", ng-mouseleave="isOpen = false")
+      md-fab-trigger.align-with-text
+
+        md-button.md-fab.md-primary(aria-label="menu or switch set", ng-click="doOrOpen($event)", ng-mouseenter="isOpen = true")
+          ng-md-icon(size="24", icon="{{isOpen && hasMultipleSets() ? 'my_library_books' : 'menu'}}", style="fill: white")
+          md-tooltip(md-direction="left", ng-if="hasMultipleSets()") Change current team set
+
+      md-fab-actions(ng-if="isOpen")
+        md-button.md-fab.md-raised.md-accent.md-hue-1(aria-label="new set", ng-click="doNewSet($event)")
+          ng-md-icon(size="24", icon="add_circle", style="fill: white")
+          md-tooltip(md-direction="left") Create new team set
+
+        md-button.md-fab.md-raised.md-accent.md-hue-1(aria-label="rename set", ng-click="doRename($event)", ng-if="ownsCurrentSet()")
+          ng-md-icon(size="24", icon="edit", style="fill: white")
+          md-tooltip(md-direction="left") Rename current team set
+
+        md-button.md-fab.md-raised.md-accent.md-hue-1(aria-label="export to set", ng-click="doExport($event)", ng-if="selected.length > 0 && hasMultipleSets()")
+          ng-md-icon(size="24", icon="recent_actors", style="fill: white")
+          md-tooltip(md-direction="left") Export to another team set
+
+        md-button.md-fab.md-raised.md-warn.md-hue-1(aria-label="share set", ng-click="openShareDialog($event)", ng-if="ownsCurrentSet()")
+          ng-md-icon(size="24", icon="share", style="fill: white")
+          md-tooltip(md-direction="left") Share this team set
+
+        md-button.md-fab.md-raised.md-warn.md-hue-1(aria-label="delete set", ng-click="doDelete($event)", ng-if="ownsCurrentSet() && hasMultipleSets()")
+          ng-md-icon(size="24", icon="delete", style="fill: white")
+          md-tooltip(md-direction="left") Remove this team set

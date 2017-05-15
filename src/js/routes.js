@@ -22,6 +22,17 @@ site.config(($stateProvider, $urlRouterProvider) => {
         'sidebar@': { templateUrl: '/tournament-sidebar', controller: 'tournamentSidebarController' }
       }
     })
+    .state('teamManage', {
+      url: '/teams',
+      params: {
+        userSelectOnly: null,
+        tournamentId: null
+      },
+      views: {
+        'content@': { templateUrl: '/team-manage', controller: 'teamManageController' },
+        'sidebar@': { templateUrl: '/tournament-sidebar', controller: 'tournamentSidebarController' }
+      }
+    })
     .state('eventManage', {
       url: '/events',
       views: {
