@@ -45,9 +45,9 @@ site.service('TeamManagement', (FirebaseURL, $mdDialog, Toaster, FilterUtils) =>
   };
 
   const filterTeams = (teams, datatable) => {
-    return FilterUtils.filterTable(teams, datatable, user => [
+    return FilterUtils.filterTable(teams, datatable, team => [
       [team.name.toLowerCase()],
-      [team.location ? user.location.toLowerCase() : ''],
+      [team.location ? team.location.toLowerCase() : ''],
       FilterUtils.getFilterArr(team, 'aliases'),
       FilterUtils.getFilterArr(team, 'games'),
       FilterUtils.getFilterArr(team, 'characters')

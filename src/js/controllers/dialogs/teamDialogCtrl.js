@@ -9,9 +9,9 @@ site.controller('teamDialogController', ($scope, $mdDialog, team, viewOnly, Team
 
   $scope.label = _.keys(team).length > 0 ? 'Edit' : 'Add';
 
-  $scope.getLocations = (query = '') => FilterUtils.getAndFilter(UserManagement.teams, 'location', query);
-  $scope.getGames = (query = '') => _.difference(FilterUtils.getAndFilter(UserManagement.teams, 'games', query), $scope.item.games);
-  $scope.getCharacters = (query = '') => _.difference(FilterUtils.getAndFilter(UserManagement.teams, 'characters', query), $scope.item.characters);
+  $scope.getLocations = (query = '') => FilterUtils.getAndFilter(TeamManagement.teams, 'location', query);
+  $scope.getGames = (query = '') => _.difference(FilterUtils.getAndFilter(TeamManagement.teams, 'games', query), $scope.item.games);
+  $scope.getCharacters = (query = '') => _.difference(FilterUtils.getAndFilter(TeamManagement.teams, 'characters', query), $scope.item.characters);
 
   $scope.item = _.extend({
     aliases: [],
